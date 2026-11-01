@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { submitInquiry } from "@/app/contact/actions";
+import { submitInquiry } from "@/lib/inquiry-action";
 import { inquirySchema, firstErrors, type InquiryField, type InquiryState } from "@/lib/validation";
 import { Icon } from "./Icon";
 

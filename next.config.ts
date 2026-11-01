@@ -10,6 +10,9 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: { formats: ["image/avif", "image/webp"] },
+  // Admin photo uploads go through server actions; allow up to 10 MB images plus form overhead.
+  experimental: { serverActions: { bodySizeLimit: "11mb" } },
+  serverExternalPackages: ["mysql2", "sharp"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

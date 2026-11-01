@@ -1,22 +1,42 @@
 import "server-only";
+import { sql } from "drizzle-orm";
+import { db, hasDatabase } from "@/db";
 
 /**
- * Simple in-memory limiter: at most `limit` hits per `windowMs` per key.
- * Good enough for one server process; Step 3 adds a database-backed check.
+ * At most `limit` hits per `windowMs` for a key. Uses the database when
+ * available so limits hold across restarts, otherwise process memory.
+ * Returns true when the hit is allowed.
  */
-const hits = new Map<string, number[]>();
+const memory = new Map<string, { hits: number; resetAt: number }>();
 
-export function rateLimit(key: string, limit = 5, windowMs = 10 * 60 * 1000) {
+export async function rateLimit(key: string, limit: number, windowMs: number): Promise<boolean> {
   const now = Date.now();
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
-  if (recent.length >= limit) {
-    hits.set(key, recent);
-    return false;
+  if (!hasDatabase()) {
+    const e = memory.get(key);
+    if (!e || e.resetAt <= now) {
+      memory.set(key, { hits: 1, resetAt: now + windowMs });
+      if (memory.size > 5000) for (const [k, v] of memory) if (v.resetAt <= now) memory.delete(k);
+      return true;
+    }
+    e.hits++;
+    return e.hits <= limit;
   }
-  recent.push(now);
-  hits.set(key, recent);
-  if (hits.size > 5000) {
-    for (const [k, v] of hits) if (!v.some((t) => now - t < windowMs)) hits.delete(k);
+  const resetAt = new Date(now + windowMs);
+  // Insert, or bump the counter; start a fresh window if the old one expired.
+  await db().execute(sql`
+    INSERT INTO rate_limits (\`key\`, hits, reset_at) VALUES (${key}, 1, ${resetAt})
+    ON DUPLICATE KEY UPDATE
+      hits = IF(reset_at <= UTC_TIMESTAMP(), 1, hits + 1),
+      reset_at = IF(reset_at <= UTC_TIMESTAMP(), VALUES(reset_at), reset_at)
+  `);
+  const [rows] = (await db().execute(sql`SELECT hits FROM rate_limits WHERE \`key\` = ${key}`)) as unknown as [{ hits: number }[]];
+  return (rows[0]?.hits ?? 0) <= limit;
+}
+
+export async function clearRateLimit(key: string) {
+  if (!hasDatabase()) {
+    memory.delete(key);
+    return;
   }
-  return true;
+  await db().execute(sql`DELETE FROM rate_limits WHERE \`key\` = ${key}`);
 }
