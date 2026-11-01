@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="flex items-center justify-between gap-3 px-4 py-4 lg:block">
           <Link href="/admin" className="flex items-center gap-2 no-underline">
             <span className="bg-white px-2 py-1">
-              <Image src="/brand/ark-logo.webp" alt="ARK logo" width={978} height={497} className="h-7 w-auto" />
+              <Image src="/brand/ark-logo.webp" alt="ARK logo" width={978} height={497} sizes="56px" className="h-7 w-auto" />
             </span>
             <span className="font-head text-[13px] font-bold text-white">Admin</span>
           </Link>

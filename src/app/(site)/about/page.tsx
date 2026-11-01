@@ -147,7 +147,7 @@ export default async function AboutPage() {
               <h2 className="h2">Reasons Customers Work With Us</h2>
             </div>
             <Link href="/why-choose-us" className="btn btn-dark">
-              Read More
+              Why Choose Us
             </Link>
           </div>
           <ReasonsGrid reasons={reasons.slice(0, 6)} />

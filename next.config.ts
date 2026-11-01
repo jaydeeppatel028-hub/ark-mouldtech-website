@@ -5,10 +5,17 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  // Browsers only honour this over HTTPS. One year, without preload, so it can still be undone.
+  ...(process.env.NODE_ENV === "production" ? [{ key: "Strict-Transport-Security", value: "max-age=31536000" }] : []),
 ];
+// The Content-Security-Policy is set per request in src/middleware.ts (it needs a fresh nonce).
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Always put page titles and descriptions in the <head> (no streamed metadata),
+  // so every search engine and link preview sees them in the first HTML.
+  htmlLimitedBots: /.*/,
   images: { formats: ["image/avif", "image/webp"] },
   // Admin photo uploads go through server actions; allow up to 10 MB images plus form overhead.
   experimental: { serverActions: { bodySizeLimit: "11mb" } },

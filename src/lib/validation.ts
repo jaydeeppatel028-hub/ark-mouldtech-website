@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+// Zod normally probes for eval() to speed up validation. The Content-Security-Policy
+// forbids eval, so turn that off instead of triggering a policy violation.
+z.config({ jitless: true });
+
 const clean = (v: string) => v.replace(/[\s\-().]/g, "");
 
 /** Shared by the browser (instant feedback) and the server (the real check). */

@@ -1,5 +1,6 @@
 "use server";
 
+import { createHash, timingSafeEqual } from "node:crypto";
 import { count, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { redirect } from "next/navigation";
@@ -9,6 +10,13 @@ import { createSession, requireAdmin, signOutEverywhere } from "@/lib/auth";
 import { clientIp } from "@/lib/client-ip";
 import { hashPassword, passwordProblem, verifyPassword } from "@/lib/password";
 import { clearRateLimit, rateLimit } from "@/lib/rate-limit";
+
+/** Constant-time comparison, so response timing does not reveal how much of a secret matched. */
+function sameSecret(given: string, expected: string) {
+  const a = createHash("sha256").update(given).digest();
+  const b = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(a, b);
+}
 
 export type AuthState = { error?: string; ok?: string } | undefined;
 
@@ -21,15 +29,20 @@ export async function login(_prev: AuthState, formData: FormData): Promise<AuthS
   const password = String(formData.get("password") ?? "").slice(0, 200);
   const ip = await clientIp();
   const keyUser = `login:${ip}:${email}`;
+  // The per-email cap still holds if someone fakes their IP address in request headers.
+  const keyEmail = `login-email:${email}`;
   const okIp = await rateLimit(`login-ip:${ip}`, 30, 15 * 60 * 1000);
   const okUser = await rateLimit(keyUser, 5, 15 * 60 * 1000);
+  const okEmail = await rateLimit(keyEmail, 20, 60 * 60 * 1000);
   if (!okIp || !okUser) return { error: "Too many sign-in attempts. Wait 15 minutes and try again." };
+  if (!okEmail) return { error: "Too many sign-in attempts for this account. Wait an hour and try again." };
 
   const [user] = await db().select().from(schema.adminUsers).where(eq(schema.adminUsers.email, email)).limit(1);
   const valid = await verifyPassword(password, user?.passwordHash ?? DUMMY_HASH);
   if (!user || !valid) return { error: "Email or password is incorrect." };
 
   await clearRateLimit(keyUser);
+  await clearRateLimit(keyEmail);
   await createSession(user.id);
   redirect("/admin");
 }
@@ -60,7 +73,7 @@ export async function runSetup(_prev: AuthState, formData: FormData): Promise<Au
   if (!expected || expected.length < 16) return { error: "Set a SETUP_TOKEN of at least 16 characters on the server first." };
   const ip = await clientIp();
   if (!(await rateLimit(`setup:${ip}`, 10, 15 * 60 * 1000).catch(() => true))) return { error: "Too many attempts. Wait 15 minutes." };
-  if (String(formData.get("token") ?? "") !== expected) return { error: "Setup code is incorrect." };
+  if (!sameSecret(String(formData.get("token") ?? ""), expected)) return { error: "Setup code is incorrect." };
 
   const pool = (db() as unknown as { $client: import("mysql2/promise").Pool }).$client;
   await createTables(pool);

@@ -60,7 +60,7 @@ export function Testimonials({ testimonials, preview, compact = false }: Props) 
                 <div key={i} className="grid flex-[0_0_100%] border border-line md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" aria-hidden={i !== cur} role="group" aria-roledescription="slide" aria-label={`Review ${i + 1} of ${count}`}>
                   {t.screenshot && (
                     <div className="relative grid min-h-[300px] place-items-center bg-mist p-6">
-                      <Image src={t.screenshot.src} alt={t.screenshot.alt || `Review from ${t.customerName}`} width={t.screenshot.width} height={t.screenshot.height} className="max-h-[420px] w-auto object-contain" />
+                      <Image src={t.screenshot.src} alt={t.screenshot.alt || `Review from ${t.customerName}`} width={t.screenshot.width} height={t.screenshot.height} sizes="(max-width: 768px) 90vw, 600px" className="max-h-[420px] w-auto object-contain" />
                     </div>
                   )}
                   <div className={`flex min-w-0 flex-col justify-center gap-[18px] p-6 md:p-9 ${t.screenshot ? "" : "md:col-span-2"}`}>

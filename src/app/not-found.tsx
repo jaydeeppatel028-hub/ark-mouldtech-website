@@ -6,7 +6,7 @@ export default function NotFound() {
     <section className="band">
       <div className="wrap grid justify-items-start gap-4">
         <Link href="/" aria-label="ARK Mouldtech Solutions, home">
-          <Image src="/brand/ark-logo.webp" alt="ARK logo" width={978} height={497} className="mb-4 h-12 w-auto" />
+          <Image src="/brand/ark-logo.webp" alt="ARK logo" width={978} height={497} sizes="96px" className="mb-4 h-12 w-auto" />
         </Link>
         <span className="eyebrow">Page not found</span>
         <h1 className="h2">We couldn&apos;t find that page</h1>
