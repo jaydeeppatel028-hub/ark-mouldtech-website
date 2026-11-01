@@ -4,8 +4,6 @@ import { ClientLogos } from "@/components/ClientLogos";
 import { CtaBanner } from "@/components/CtaBanner";
 import { HeroDrawing } from "@/components/HeroDrawing";
 import { Icon } from "@/components/Icon";
-import { PhotoSlot } from "@/components/PhotoSlot";
-import { ReasonsGrid } from "@/components/ReasonsGrid";
 import { Testimonials } from "@/components/Testimonials";
 import { IS_PREVIEW } from "@/lib/config";
 import { getClients, getCompany, getFeaturedCategories, getMachines, getReasons, getTestimonials } from "@/lib/content";
@@ -22,8 +20,15 @@ export default async function HomePage() {
     getClients(),
     getTestimonials(),
   ]);
-  const location = reasons.find((r) => r.icon === "pin");
-  const otherReasons = reasons.filter((r) => r !== location);
+  const qty = (name: string) => machines.find((m) => m.name.toLowerCase().startsWith(name))?.quantity ?? "";
+  const infraFacts: [string, string][] = [
+    [company.workshopArea, "Workshop area"],
+    [qty("vmc"), "VMC machines"],
+    [qty("edm"), "EDM machines"],
+    [String(machines.length - 2), "More machines & equipment"],
+  ];
+  const KEY_REASONS = ["Precision Engineering", "Quality-Focused Manufacturing", "Repair & Maintenance Support", "Strategic Industrial Location"];
+  const keyReasons = reasons.filter((r) => KEY_REASONS.includes(r.title));
   const showClients = clients.length > 0 || IS_PREVIEW;
   const showReviews = testimonials.length > 0 || IS_PREVIEW;
 
@@ -40,15 +45,15 @@ export default async function HomePage() {
             Hero photo: VMC machining in your workshop
           </span>
         )}
-        <div className="wrap relative z-[2] pt-16 md:pt-[88px]">
-          <h1 className="max-w-[15ch] text-[clamp(32px,4.6vw,56px)] font-extrabold tracking-[-0.02em] text-white">
+        <div className="wrap relative z-[2] pt-12 md:pt-16">
+          <h1 className="max-w-[21ch] text-[clamp(30px,4.2vw,52px)] font-extrabold tracking-[-0.02em] text-white">
             Precision Engineering. Reliable Manufacturing. <em className="text-brand-red not-italic">Quality Solutions.</em>
           </h1>
           <p className="mt-5 max-w-[54ch] text-[clamp(16px,1.5vw,18px)] text-on-dark">
             Your trusted partner for precision die &amp; mould manufacturing, tooling solutions, repair &amp; maintenance and industrial engineering
             services.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-7 flex flex-wrap gap-3">
             <Link href="/products" className="btn btn-red">
               Explore Our Capabilities
             </Link>
@@ -56,7 +61,7 @@ export default async function HomePage() {
               Contact Us
             </Link>
           </div>
-          <dl className="mt-16 grid grid-cols-2 border-t border-white/15 md:grid-cols-[repeat(4,auto)]">
+          <dl className="mt-10 grid grid-cols-2 border-t border-white/15 md:grid-cols-[repeat(4,auto)]">
             {[
               [String(company.established), "Established"],
               [company.workshopArea, "Workshop, Sanand GIDC"],
@@ -65,7 +70,7 @@ export default async function HomePage() {
             ].map(([value, label], i) => (
               <div
                 key={label}
-                className={`grid gap-0.5 py-5 pr-5 pb-6 ${i === 1 ? "border-l border-white/15 pl-5" : ""} ${i >= 2 ? "col-span-2 border-t border-white/15 md:col-span-1 md:border-t-0 md:border-l md:pl-5" : ""}`}
+                className={`grid gap-0.5 py-4 pr-5 pb-5 ${i === 1 ? "border-l border-white/15 pl-5" : ""} ${i >= 2 ? "col-span-2 border-t border-white/15 md:col-span-1 md:border-t-0 md:border-l md:pl-5" : ""}`}
               >
                 <dt className="order-2 text-[13px] text-on-dark">{label}</dt>
                 <dd className="order-1 font-head text-[clamp(19px,1.9vw,24px)] font-extrabold text-white tabular-nums">{value}</dd>
@@ -76,41 +81,34 @@ export default async function HomePage() {
       </section>
 
       {/* Introduction */}
-      <section className="band">
-        <div className="wrap grid items-center gap-9 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
-          <div className="grid min-w-0 gap-[18px]">
+      <section className="py-14">
+        <div className="wrap grid items-start gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
+          <div className="grid min-w-0 gap-4">
             <span className="eyebrow">About ARK Mouldtech</span>
             <h2 className="h2">Engineering Excellence Since {company.established}</h2>
-            <p className="max-w-[60ch] text-muted">{company.intro}</p>
-            <p className="max-w-[60ch] text-muted">
-              We work with manufacturers in the automotive, electronics and consumer goods sectors, combining in-house VMC and EDM machining with
-              hands-on tool room experience and on-time delivery.
-            </p>
-            <Link href="/about" className="btn btn-dark mt-1.5 justify-self-start">
+            <p className="max-w-[62ch] text-muted">{company.intro}</p>
+            <Link href="/about" className="btn btn-dark mt-1 justify-self-start">
               Learn More
             </Link>
           </div>
-          <div className="border border-line bg-white">
-            <PhotoSlot label="Photo: workshop exterior or team" className="aspect-video" sizes="(max-width: 1024px) 100vw, 520px" />
-            <dl className="grid grid-cols-[auto_1fr] text-[14px]">
-              {[
-                ["Established", String(company.established)],
-                ["Founder", company.founder],
-                ["Location", `Sanand GIDC, ${company.address.city}, ${company.address.state}`],
-                ["Sectors", company.sectors.slice(0, 3).join(" · ")],
-              ].map(([k, v]) => (
-                <div key={k} className="contents">
-                  <dt className="border-t border-line px-[18px] pt-3.5 pb-3 text-[12px] font-semibold tracking-[0.08em] text-muted uppercase">{k}</dt>
-                  <dd className="border-t border-line px-[18px] py-3 font-medium text-ink">{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+          <dl className="grid grid-cols-[auto_1fr] border-b border-line text-[14px] lg:mt-9">
+            {[
+              ["Established", String(company.established)],
+              ["Founder", company.founder],
+              ["Location", `Sanand GIDC, ${company.address.city}, ${company.address.state}`],
+              ["Sectors", company.sectors.slice(0, 3).join(" · ")],
+            ].map(([k, v]) => (
+              <div key={k} className="contents">
+                <dt className="border-t border-line py-3 pr-5 text-[12px] font-semibold tracking-[0.08em] text-muted uppercase">{k}</dt>
+                <dd className="border-t border-line py-2.5 font-medium text-ink">{v}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
       {/* Products and services */}
-      <section className="band bg-mist" id="products">
+      <section className="bg-mist py-14" id="products">
         <div className="wrap">
           <div className="shead">
             <div>
@@ -131,98 +129,78 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Infrastructure */}
-      <section className="band on-dark bg-night text-on-dark">
-        <div className="wrap grid items-start gap-9 lg:grid-cols-[1fr_1.1fr] lg:gap-12">
-          <div className="grid min-w-0 gap-[18px]">
+      {/* Infrastructure: short preview, full list on /infrastructure */}
+      <section className="on-dark bg-night py-12 text-on-dark md:py-14">
+        <div className="wrap grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-12">
+          <div className="grid gap-3">
             <span className="eyebrow">Infrastructure</span>
-            <h2 className="h2">Our Manufacturing Infrastructure</h2>
-            <p className="lead">Our facility is equipped with machining, tooling and inspection equipment to support a wide range of precision manufacturing work.</p>
-            <table className="mt-2 w-full border-collapse text-[14.5px]">
-              <thead>
-                <tr>
-                  <th className="border-b border-white/20 pb-2.5 text-left font-head text-[11px] font-semibold tracking-[0.12em] text-[#8a8f9c] uppercase">Machine / Equipment</th>
-                  <th className="border-b border-white/20 pb-2.5 text-right font-head text-[11px] font-semibold tracking-[0.12em] text-[#8a8f9c] uppercase">Qty</th>
-                </tr>
-              </thead>
-              <tbody>
-                {machines.map((m) => (
-                  <tr key={m.name}>
-                    <td className="border-b border-white/[0.08] py-[11px] text-white">{m.name}</td>
-                    <td className="border-b border-white/[0.08] py-[11px] text-right font-head font-bold text-white tabular-nums">{m.quantity}</td>
-                  </tr>
-                ))}
-                <tr>
-                  <td className="border-b border-white/[0.08] py-[11px] text-sky">Workshop Area</td>
-                  <td className="border-b border-white/[0.08] py-[11px] text-right font-head font-bold text-sky tabular-nums">{company.workshopArea}</td>
-                </tr>
-              </tbody>
-            </table>
-            <Link href="/infrastructure" className="btn btn-ghost mt-2.5 justify-self-start">
-              Explore Our Infrastructure
-            </Link>
+            <h2 className="text-[clamp(24px,2.6vw,32px)] font-extrabold">State-of-the-Art Infrastructure</h2>
+            <p className="text-dim">Machining, grinding and inspection under one roof in Sanand GIDC.</p>
           </div>
-          <div className="grid grid-cols-2 grid-rows-[200px_130px] gap-3 lg:min-h-[420px] lg:grid-cols-[1.4fr_1fr] lg:grid-rows-2">
-            <PhotoSlot label="VMC machine" className="col-span-2 lg:col-span-1 lg:row-span-2" sizes="(max-width: 1024px) 100vw, 360px" />
-            <PhotoSlot label="EDM machine" sizes="(max-width: 1024px) 50vw, 260px" />
-            <PhotoSlot label="Inspection" sizes="(max-width: 1024px) 50vw, 260px" />
+          <div className="grid gap-6">
+            <dl className="grid grid-cols-2 gap-px bg-white/10 md:grid-cols-4">
+              {infraFacts.map(([value, label]) => (
+                <div key={label} className="grid gap-0.5 bg-night p-4 md:p-5">
+                  <dt className="order-2 text-[13px] text-dim">{label}</dt>
+                  <dd className="order-1 font-head text-[20px] font-extrabold whitespace-nowrap text-white tabular-nums">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <Link href="/infrastructure" className="btn btn-ghost justify-self-start">
+              See All Machines
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Why choose us */}
-      <section className="band">
-        <div className="wrap grid items-start gap-9 lg:grid-cols-[1fr_2fr] lg:gap-14">
-          <div className="grid min-w-0 gap-[18px]">
-            <span className="eyebrow">Why Choose Us</span>
-            <h2 className="h2">A Tool Room You Can Rely On</h2>
-            <p className="lead">Practical engineering, honest timelines and support that continues after delivery.</p>
-            {location && (
-              <div className="mt-2 grid gap-2 bg-ink p-[22px] text-on-dark">
-                <h3 className="flex items-center gap-2.5 text-[16px] text-white">
-                  <Icon name="pin" className="h-5 w-5 flex-none text-brand-red" />
-                  {location.title}
-                </h3>
-                <p className="text-[14px]">{location.long}</p>
-              </div>
-            )}
-            <Link href="/why-choose-us" className="btn btn-dark justify-self-start">
+      {/* Why choose us: four key points, full list on /why-choose-us */}
+      <section className="py-14">
+        <div className="wrap">
+          <div className="shead">
+            <div>
+              <span className="eyebrow">Why Choose Us</span>
+              <h2 className="h2">A Tool Room You Can Rely On</h2>
+            </div>
+            <Link href="/why-choose-us" className="btn btn-dark">
               Why Choose Us
             </Link>
           </div>
-          <ReasonsGrid reasons={otherReasons} />
+          <ul className="grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+            {keyReasons.map((r) => (
+              <li key={r.title} className="grid content-start gap-3 bg-white p-6">
+                <span className="grid h-11 w-11 place-items-center bg-mist text-brand-blue">
+                  <Icon name={r.icon} className="h-[22px] w-[22px]" />
+                </span>
+                <h3 className="text-[16px] font-bold">{r.title}</h3>
+                <p className="text-[14px] text-muted">{r.short}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      {/* Clients */}
-      {showClients && (
-        <section className="bg-mist py-16" aria-labelledby="clients-h">
-          <div className="wrap shead !mb-7">
-            <div>
-              <span className="eyebrow">Our Esteemed Clients</span>
-              <h2 className="h2" id="clients-h">
-                Companies We Work With
-              </h2>
-            </div>
-          </div>
-          <ClientLogos clients={clients} />
-        </section>
-      )}
-
-      {/* Testimonials */}
-      {showReviews && (
-        <section className="band" aria-labelledby="t-h">
-          <div className="wrap">
-            <div className="shead !mb-0">
-              <div>
-                <span className="eyebrow">Client Testimonials</span>
-                <h2 className="h2" id="t-h">
-                  What Our Customers Say
-                </h2>
+      {/* Clients and testimonials share one section */}
+      {(showClients || showReviews) && (
+        <section className="bg-mist py-14" aria-labelledby="clients-h">
+          {showClients && (
+            <>
+              <div className="wrap shead !mb-6">
+                <div>
+                  <span className="eyebrow">Our Esteemed Clients</span>
+                  <h2 className="h2" id="clients-h">
+                    Companies We Work With
+                  </h2>
+                </div>
               </div>
+              <ClientLogos clients={clients} />
+            </>
+          )}
+          {showReviews && (
+            <div className={`wrap ${showClients ? "mt-12" : ""}`}>
+              <h3 className="mb-[-28px] font-head text-[13px] font-bold tracking-[0.12em] text-muted uppercase max-sm:mb-0">What our customers say</h3>
+              <Testimonials testimonials={testimonials} preview={IS_PREVIEW} compact />
             </div>
-            <Testimonials testimonials={testimonials} preview={IS_PREVIEW} />
-          </div>
+          )}
         </section>
       )}
 

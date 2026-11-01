@@ -10,7 +10,7 @@ export function CategoryCard({ category }: { category: Category }) {
         photo={category.photo}
         label={`${category.name} photo`}
         light
-        className="aspect-[4/3]"
+        className="aspect-[16/10]"
         sizes="(max-width: 768px) 82vw, (max-width: 960px) 50vw, 400px"
       />
       <div className="flex flex-1 flex-col gap-2 px-[22px] pt-5 pb-[22px]">

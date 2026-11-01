@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Testimonial } from "@/content/site";
 import { Icon } from "./Icon";
 
-type Props = { testimonials: Testimonial[]; preview: boolean };
+type Props = { testimonials: Testimonial[]; preview: boolean; compact?: boolean };
 
 const PLACEHOLDERS = [
   {
@@ -18,7 +18,7 @@ const PLACEHOLDERS = [
   },
 ];
 
-export function Testimonials({ testimonials, preview }: Props) {
+export function Testimonials({ testimonials, preview, compact = false }: Props) {
   const real = testimonials.length > 0;
   const count = real ? testimonials.length : preview ? PLACEHOLDERS.length : 0;
   const [cur, setCur] = useState(0);
@@ -77,9 +77,9 @@ export function Testimonials({ testimonials, preview }: Props) {
                 </div>
               ))
             : PLACEHOLDERS.map((p, i) => (
-                <div key={i} className="grid flex-[0_0_100%] border border-line md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" aria-hidden={i !== cur}>
-                  <div className="grid place-items-center bg-mist p-6 md:min-h-[300px]">
-                    <div className="dash-slot aspect-[3/4] max-h-[300px] w-full max-w-[360px] p-4 text-[13px]">
+                <div key={i} className="grid flex-[0_0_100%] border border-line bg-white md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" aria-hidden={i !== cur}>
+                  <div className={`grid place-items-center bg-mist p-6 ${compact ? "md:min-h-[200px]" : "md:min-h-[300px]"}`}>
+                    <div className={`dash-slot w-full max-w-[360px] p-4 text-[13px] ${compact ? "h-[170px]" : "aspect-[3/4] max-h-[300px]"}`}>
                       <div>
                         <Icon name="image" className="mx-auto mb-2 h-[30px] w-[30px] text-[#9aa0ac]" />
                         {p.shot}
