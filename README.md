@@ -101,6 +101,29 @@ Pushes to `main` redeploy automatically. Uploaded images live in the database,
 so redeploys never lose them; back up the database (hPanel daily backups plus
 an occasional phpMyAdmin export).
 
+## Deploying to a cPanel Node.js host (MilesWeb)
+
+These hosts run Node.js apps but should not build them, so GitHub builds the
+site and uploads the finished files over SSH (`.github/workflows/deploy.yml`).
+`npm run package` (or `scripts/package-standalone.sh`) produces the same
+`deploy/` folder locally: `app.js` at the top, the site in `deploy/site`.
+
+1. cPanel, **Setup Node.js App**, Create: Node.js 22, mode Production,
+   application root `ark-website`, application URL arkmouldtech.com, startup
+   file `app.js`. Add the environment variables from `.env.example` there.
+   Do not run "NPM Install": the upload brings its own packages.
+2. cPanel, **MySQL Databases**: create the database and user, add the user to
+   the database with all privileges. Try host `127.0.0.1`; if refused, `localhost`.
+3. cPanel, **SSH Access**: import the deploy public key and authorize it.
+4. GitHub, repository Settings, Secrets and variables, Actions:
+   variables `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_APP_DIR` (`ark-website`),
+   `DEPLOY_PORT` (if not 22), `SITE_URL`; secret `DEPLOY_SSH_KEY` (private key)
+   and optionally `DEPLOY_KNOWN_HOSTS`.
+5. Actions tab, **Deploy to server**, Run workflow. After that every merge to
+   `main` deploys by itself. The previous version stays in `site.prev`; to roll
+   back, swap `site` and `site.prev` and touch `tmp/restart.txt`.
+6. Open `/admin/setup` once, then remove `SETUP_TOKEN`.
+
 ## Content rules
 
 Do not add made-up clients, testimonials, certifications or machine
@@ -117,4 +140,4 @@ it. Set `SITE_PREVIEW=off` at launch.
 - [x] Step 1: Homepage design
 - [x] Step 2: All six pages
 - [x] Step 3: MySQL database, admin panel, inquiry storage and email alerts (tested against a local SMTP server; real mailbox still to be tested)
-- [ ] Step 4: SEO, security hardening, testing (done); deployment to Hostinger (waiting for hosting purchase)
+- [ ] Step 4: SEO, security hardening, testing (done); deployment (waiting for hosting purchase)

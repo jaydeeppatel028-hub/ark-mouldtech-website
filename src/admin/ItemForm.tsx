@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { submitKeepingValues } from "@/lib/submit-keeping-values";
 import type { FormState } from "./actions";
 
 type Field =
@@ -68,7 +69,7 @@ export function ItemForm({ fields, values, images, categories, action, cancelHre
   const errs = state?.fieldErrors ?? {};
 
   return (
-    <form action={formAction} className="grid max-w-3xl gap-5">
+    <form action={formAction} onSubmit={(e) => submitKeepingValues(e, formAction)} className="grid max-w-3xl gap-5">
       {state?.error && (
         <p role="alert" className="border-l-4 border-brand-red bg-red-50 px-4 py-3 text-[14px] text-brand-red-dark">
           {state.error}

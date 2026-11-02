@@ -13,6 +13,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // NEXT_OUTPUT=standalone builds a self-contained server folder that can be
+  // uploaded to hosts where building on the server is not allowed (see scripts/package-standalone.sh).
+  ...(process.env.NEXT_OUTPUT === "standalone" ? { output: "standalone" as const } : {}),
   // Always put page titles and descriptions in the <head> (no streamed metadata),
   // so every search engine and link preview sees them in the first HTML.
   htmlLimitedBots: /.*/,
