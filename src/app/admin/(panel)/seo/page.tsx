@@ -31,10 +31,12 @@ export default async function SeoPage({ searchParams }: { searchParams: Promise<
             <div className="field">
               <label htmlFor={`${key}-t`}>Page title</label>
               <input id={`${key}-t`} name={`${key}.title`} defaultValue={values[i].title} maxLength={70} required />
+              <span className="text-[12.5px] text-muted">Shown as the blue link in Google. Best under 60 characters.</span>
             </div>
             <div className="field">
               <label htmlFor={`${key}-d`}>Description</label>
               <textarea id={`${key}-d`} name={`${key}.description`} defaultValue={values[i].description} maxLength={170} rows={2} required />
+              <span className="text-[12.5px] text-muted">Shown under the link in Google. Best between 120 and 160 characters.</span>
             </div>
             <div className="field">
               <label htmlFor={`${key}-k`}>Keywords (optional)</label>

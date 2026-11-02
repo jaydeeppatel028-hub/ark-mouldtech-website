@@ -12,7 +12,7 @@ export default async function LoginPage() {
   return (
     <div className="grid min-h-screen place-items-center bg-mist px-4 py-10">
       <div className="w-full max-w-sm border border-line bg-white p-7">
-        <Image src="/brand/ark-logo.webp" alt="ARK logo" width={978} height={497} className="mb-5 h-12 w-auto" />
+        <Image src="/brand/ark-logo.webp" alt="ARK logo" width={978} height={497} sizes="96px" className="mb-5 h-12 w-auto" />
         <h1 className="mb-5 text-[22px] font-extrabold">Admin sign in</h1>
         <AuthForm
           action={login}

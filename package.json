@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "db:setup": "tsx scripts/db-setup.ts",
     "admin:create": "tsx scripts/create-admin.ts"
@@ -17,24 +17,29 @@
     "drizzle-orm": "0.45.4",
     "mysql2": "3.24.6",
     "next": "15.5.28",
-    "nodemailer": "6.10.1",
+    "nodemailer": "10.3.1",
     "react": "19.1.10",
     "react-dom": "19.1.10",
     "server-only": "0.0.1",
-    "sharp": "0.34.5",
-    "zod": "3.25.76"
+    "sharp": "0.35.5",
+    "zod": "4.6.7"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "3.3.7",
     "@tailwindcss/postcss": "4.1.18",
     "@types/node": "22.20.5",
-    "@types/nodemailer": "6.4.24",
     "@types/react": "19.1.17",
     "@types/react-dom": "19.1.11",
+    "eslint": "9.39.5",
+    "eslint-config-next": "15.5.28",
     "tailwindcss": "4.1.18",
     "tsx": "4.23.15",
     "typescript": "5.9.3"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.9.0"
+  },
+  "overrides": {
+    "postcss": "8.5.32"
   }
 }

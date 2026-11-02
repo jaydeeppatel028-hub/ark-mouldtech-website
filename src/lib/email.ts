@@ -1,12 +1,12 @@
 import "server-only";
-import nodemailer from "nodemailer";
+import nodemailer, { type Mail } from "nodemailer";
 
 /** SMTP settings come only from server environment variables, never the browser. */
 export function emailConfigured() {
   return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 }
 
-let transporter: nodemailer.Transporter | null = null;
+let transporter: Mail | null = null;
 function transport() {
   if (!transporter) {
     const port = Number(process.env.SMTP_PORT ?? 465);

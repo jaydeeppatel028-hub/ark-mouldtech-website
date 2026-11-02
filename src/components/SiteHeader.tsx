@@ -49,6 +49,7 @@ export function SiteHeader({ addressShort, email, phone }: Props) {
               alt="ARK logo"
               width={978}
               height={497}
+              sizes="90px"
               priority
               className="h-[38px] w-auto flex-none md:h-11"
             />

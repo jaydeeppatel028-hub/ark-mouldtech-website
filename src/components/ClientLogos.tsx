@@ -11,7 +11,7 @@ export function ClientLogos({ clients, compact = false }: { clients: Client[]; c
     ? clients.map((c) => ({
         key: c.name,
         node: c.logo ? (
-          <Image src={c.logo.src} alt={c.logo.alt || c.name} width={c.logo.width} height={c.logo.height} className="max-h-16 w-auto object-contain" />
+          <Image src={c.logo.src} alt={c.logo.alt || c.name} width={c.logo.width} height={c.logo.height} sizes="200px" className="max-h-16 w-auto object-contain" />
         ) : (
           <span className="font-head text-[14px] font-bold text-ink">{c.name}</span>
         ),

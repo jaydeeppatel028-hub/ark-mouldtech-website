@@ -88,7 +88,7 @@ export default async function HomePage() {
             <h2 className="h2">Engineering Excellence Since {company.established}</h2>
             <p className="max-w-[62ch] text-muted">{company.intro}</p>
             <Link href="/about" className="btn btn-dark mt-1 justify-self-start">
-              Learn More
+              More About Us
             </Link>
           </div>
           <dl className="grid grid-cols-[auto_1fr] border-b border-line text-[14px] lg:mt-9">

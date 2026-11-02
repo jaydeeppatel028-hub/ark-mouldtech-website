@@ -14,7 +14,7 @@ export async function SiteFooter() {
       <div className="wrap grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr_1.3fr]">
         <div>
           <div className="mb-4 inline-flex items-center gap-3 bg-white px-4 py-3">
-            <Image src="/brand/ark-logo.webp" alt="ARK logo" width={978} height={497} className="h-11 w-auto" />
+            <Image src="/brand/ark-logo.webp" alt="ARK logo" width={978} height={497} sizes="90px" className="h-11 w-auto" />
             <span className="border-l border-line pl-3 font-head text-[13px] leading-tight font-extrabold tracking-[0.03em] text-ink">
               ARK MOULDTECH
               <br />
@@ -28,7 +28,7 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h4 className="mb-4 text-[13px] tracking-[0.12em] text-white uppercase">Quick Links</h4>
+          <h2 className="mb-4 text-[13px] tracking-[0.12em] text-white uppercase">Quick Links</h2>
           <ul className="grid gap-2.5">
             {NAV.map((n) => (
               <li key={n.href}>
@@ -41,7 +41,7 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h4 className="mb-4 text-[13px] tracking-[0.12em] text-white uppercase">Products &amp; Services</h4>
+          <h2 className="mb-4 text-[13px] tracking-[0.12em] text-white uppercase">Products &amp; Services</h2>
           <ul className="grid gap-2.5">
             {categories.map((c) => (
               <li key={c.slug}>
@@ -54,7 +54,7 @@ export async function SiteFooter() {
         </div>
 
         <div>
-          <h4 className="mb-4 text-[13px] tracking-[0.12em] text-white uppercase">Contact</h4>
+          <h2 className="mb-4 text-[13px] tracking-[0.12em] text-white uppercase">Contact</h2>
           <ul className="grid gap-3">
             <li className="grid grid-cols-[18px_1fr] gap-2.5">
               <Icon name="pin" className="mt-1 h-4 w-4 text-sky" />

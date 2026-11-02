@@ -301,9 +301,9 @@ export type PageSeo = { title: string; description: string };
 
 export const seo: Record<string, PageSeo> = {
   home: {
-    title: "Die & Mould Manufacturer in Sanand, Ahmedabad | ARK Mouldtech Solutions",
+    title: "Die & Mould Manufacturer in Sanand, Ahmedabad | ARK Mouldtech",
     description:
-      "ARK Mouldtech Solutions manufactures plastic injection moulds, blow moulds, automobile component moulds and press tools, and repairs dies and moulds, from Sanand GIDC, Ahmedabad, Gujarat.",
+      "Plastic injection moulds, blow moulds, automobile component moulds, press tools and die & mould repair by ARK Mouldtech Solutions, Sanand GIDC, Ahmedabad.",
   },
   about: {
     title: "About Us | ARK Mouldtech Solutions, Sanand GIDC",
@@ -311,12 +311,12 @@ export const seo: Record<string, PageSeo> = {
       "Established in 2023 by Mr. Nitin Mukesh, ARK Mouldtech Solutions is a die and mould manufacturing company in Sanand GIDC, Ahmedabad, Gujarat.",
   },
   products: {
-    title: "Injection Moulds, Blow Moulds, Press Tools & Trolleys | ARK Mouldtech",
+    title: "Injection Moulds, Blow Moulds & Press Tools | ARK Mouldtech",
     description:
       "Plastic injection moulds, blow moulds, automobile component moulds, press tools, mould repair, industrial trolleys and VMC/EDM job work in Ahmedabad, Gujarat.",
   },
   infrastructure: {
-    title: "Manufacturing Infrastructure | VMC & EDM in Sanand | ARK Mouldtech",
+    title: "Infrastructure: VMC & EDM Machines, Sanand | ARK Mouldtech",
     description:
       "A 7,000 sq. ft. workshop in Sanand GIDC with VMC machines, EDM machines, surface grinding, milling, turning and inspection equipment.",
   },

@@ -1,6 +1,6 @@
 import "server-only";
 import { eq, inArray } from "drizzle-orm";
-import sharp from "sharp";
+import sharp, { type Metadata } from "sharp";
 import { db, schema } from "@/db";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
@@ -19,7 +19,7 @@ export class UploadError extends Error {}
 export async function saveUpload(file: File, kind: ImageKind, alt: string): Promise<number> {
   if (file.size > MAX_UPLOAD_BYTES) throw new UploadError("Images must be 10 MB or smaller.");
   const input = Buffer.from(await file.arrayBuffer());
-  let meta: sharp.Metadata;
+  let meta: Metadata;
   try {
     meta = await sharp(input).metadata();
   } catch {
