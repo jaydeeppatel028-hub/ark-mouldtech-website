@@ -1,0 +1,73 @@
+name: Deploy to server
+
+# Builds the site on GitHub and uploads the finished files over SSH, for hosts
+# (such as MilesWeb cPanel Node.js hosting) that should not build the app themselves.
+# Runs only after the server details are saved in the repository settings:
+#   Variables: DEPLOY_HOST, DEPLOY_USER, DEPLOY_APP_DIR (folder of the Node.js app), DEPLOY_PORT (optional, default 22)
+#   Secrets:   DEPLOY_SSH_KEY (private key allowed on the server), DEPLOY_KNOWN_HOSTS (optional, ssh-keyscan output)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: vars.DEPLOY_HOST != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: ./scripts/package-standalone.sh
+
+      - name: Upload and restart
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          HOST: ${{ vars.DEPLOY_HOST }}
+          SSH_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+          SSH_USER: ${{ vars.DEPLOY_USER }}
+          APP_DIR: ${{ vars.DEPLOY_APP_DIR }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$KNOWN_HOSTS" ]; then printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts; else ssh-keyscan -p "$SSH_PORT" "$HOST" > ~/.ssh/known_hosts; fi
+          SSH="ssh -i $HOME/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=yes -o BatchMode=yes"
+          DEST="$SSH_USER@$HOST"
+
+          # 1. Upload the new version next to the running one (unchanged files are hard-linked, so it is quick).
+          $SSH "$DEST" "mkdir -p '$APP_DIR'"
+          rsync -az --delete --link-dest=../site -e "$SSH" deploy/site/ "$DEST:$APP_DIR/site.next/"
+          rsync -az -e "$SSH" deploy/app.js deploy/package.json "$DEST:$APP_DIR/"
+
+          # 2. Swap it in, keep the previous version as site.prev for a quick rollback, restart the app.
+          $SSH "$DEST" "set -e; cd '$APP_DIR'; rm -rf site.prev; if [ -d site ]; then mv site site.prev; fi; mv site.next site; mkdir -p tmp; touch tmp/restart.txt; if command -v cloudlinux-selector >/dev/null 2>&1; then cloudlinux-selector restart --json --interpreter nodejs --app-root '$APP_DIR' >/dev/null || true; fi"
+          rm -f ~/.ssh/deploy_key
+
+      - name: Check the site answers
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        if: env.SITE_URL != ''
+        run: |
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/") || true
+            echo "Attempt $i: HTTP $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 10
+          done
+          echo "The site did not answer with 200 after deploying." && exit 1

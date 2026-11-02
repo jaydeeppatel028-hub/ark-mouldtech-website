@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
+import { submitKeepingValues } from "@/lib/submit-keeping-values";
 import { submitInquiry } from "@/lib/inquiry-action";
 import { inquirySchema, firstErrors, type InquiryField, type InquiryState } from "@/lib/validation";
 import { Icon } from "./Icon";
@@ -57,7 +58,10 @@ export function InquiryForm({ product }: { product?: string }) {
           e.preventDefault();
           const first = e.currentTarget.querySelector<HTMLElement>("[aria-invalid='true']");
           first?.focus();
+          return;
         }
+        // Keeps what the visitor typed if the server says something is wrong.
+        submitKeepingValues(e, action);
       }}
       className="grid gap-5 sm:grid-cols-2"
     >
